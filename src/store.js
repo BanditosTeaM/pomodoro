@@ -1,19 +1,27 @@
 import { defineStore } from 'pinia'
+import storageBGColor from './storage/adapters/bgcolor'
 
 export const useDataStore = defineStore('data', {
 	state: () => ({
 		settings: {
 			times: {
 				// in minutes
-				work: 2 / 60,
-				shortBreak: 3 / 60,
-				longBreak: 4 / 60
+				work: 2000,
+				shortBreak: 3000,
+				longBreak: 4000
 			},
 
-			selectedMode: 'work'
+			selectedMode: 'work',
+			selectedBGColor: 'bg-gray-500'
 		}
 	}),
 	actions: {
+		initializeBGColor() {
+			const jsonBGColor = JSON.parse(storageBGColor.getBGColorInStorage())
+			if (!jsonBGColor) return
+
+			this.settings.selectedBGColor = jsonBGColor
+		},
 		setSelectedMode(newMode) {
 			this.settings.selectedMode = newMode
 		},
@@ -25,6 +33,10 @@ export const useDataStore = defineStore('data', {
 		},
 		updateLongBreakTime(newLongBreakTime) {
 			this.settings.times.longBreak = newLongBreakTime * 60
+		},
+		updateBGColor(newBGColor) {
+			this.settings.selectedBGColor = newBGColor
+			storageBGColor.setBGColorInStorage(this.settings.selectedBGColor)
 		}
 	}
 })

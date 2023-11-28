@@ -33,17 +33,21 @@ const selectedTitle = computed(() => {
 	return title.title
 })
 
+const BGColorTimer = computed(() => {
+	return dataStore.settings.selectedBGColor
+})
+
 // from minutes to milliseconds
 const workTimeMode = computed(() => {
-	return dataStore.settings.times.work * 1000
+	return dataStore.settings.times.work
 })
 
 const shortBreakTimeMode = computed(() => {
-	return dataStore.settings.times.shortBreak * 1000
+	return dataStore.settings.times.shortBreak
 })
 
 const longBreakTimeMode = computed(() => {
-	return dataStore.settings.times.longBreak * 1000
+	return dataStore.settings.times.longBreak
 })
 
 const timer = useTimer(Date.now() + workTimeMode.value, false)
@@ -68,28 +72,24 @@ function switchingTimer() {
 	}
 
 	checkTimer.value = 'Resume'
-	return timer.pause()
+	timer.pause()
 }
 
 function toggleModalSetings() {
-	return (isModalSettingsOpen.value = !isModalSettingsOpen.value)
+	isModalSettingsOpen.value = !isModalSettingsOpen.value
 }
 
-function updatedWorkTime(newWorkTime) {
-	dataStore.updateWorkTime(newWorkTime)
-
+function updatedWorkTime() {
 	timer.restart(Date.now() + workTimeMode.value, false)
 	checkTimer.value = 'Start'
 }
 
-function updatedShortBreakTime(newBreakTime) {
-	dataStore.updateShortBreakTime(newBreakTime)
+function updatedShortBreakTime() {
 	timer.restart(Date.now() + workTimeMode.value, false)
 	checkTimer.value = 'Start'
 }
 
-function updatedLongBreakTime(newLongTime) {
-	dataStore.updateLongBreakTime(newLongTime)
+function updatedLongBreakTime() {
 	timer.restart(Date.now() + workTimeMode.value, false)
 	checkTimer.value = 'Start'
 }
@@ -99,7 +99,7 @@ function cycleSkipTimerPart() {
 		return (skipPartTimer.value = 1)
 	}
 
-	return (skipPartTimer.value += 1)
+	skipPartTimer.value += 1
 }
 
 onMounted(() => {
@@ -119,68 +119,69 @@ onMounted(() => {
 
 			if (skipPartTimer.value >= 4) {
 				dataStore.setSelectedMode('longBreak')
-				restartTimer()
-				return
 			} else {
 				dataStore.setSelectedMode('shortBreak')
-				restartTimer()
-				return
 			}
+			restartTimer()
 		}
 	})
+	dataStore.initializeBGColor()
 })
 </script>
 
 <template>
-	<div
-		class="flex flex-col justify-between fixed top-2/4 left-2/4 -translate-x-1/2 -translate-y-1/2 text-center bg-white w-96 h-60 rounded-md"
-	>
-		<div>
-			<h1>{{ selectedTitle }}</h1>
-			<h2>{{ skipPartTimer }} / 4</h2>
+	<main :class="`${BGColorTimer} w-full h-full min-h-screen`">
+		<div
+			class="flex flex-col justify-between absolute top-2/4 left-2/4 -translate-x-1/2 -translate-y-1/2 text-center bg-white w-96 h-60 rounded-md"
+		>
+			<div>
+				<h1>{{ selectedTitle }}</h1>
+				<h2>{{ skipPartTimer }} / 4</h2>
 
-			<div class="text-lg">
-				<TimerDigit :digit="timer.minutes" />
-				:
-				<TimerDigit :digit="timer.seconds" />
+				<div class="text-lg">
+					<TimerDigit :digit="timer.minutes" />
+					:
+					<TimerDigit :digit="timer.seconds" />
+				</div>
+			</div>
+			<div class="flex h-10">
+				<button
+					class="w-full"
+					@click="switchingTimer()"
+				>
+					{{ checkTimer }}
+				</button>
+				<button
+					class="w-full"
+					@click="restartTimer()"
+				>
+					Restart
+				</button>
+				<button
+					class="w-full"
+					@click="cycleSkipTimerPart()"
+				>
+					Next
+				</button>
 			</div>
 		</div>
-		<div class="flex h-10">
+		<div
+			class="absolute pl-4"
+			:class="{ 'translate-x-[425px]': isModalSettingsOpen === true }"
+		>
 			<button
-				class="w-full"
-				@click="switchingTimer()"
+				class="text-black pt-2"
+				@click="toggleModalSetings"
 			>
-				{{ checkTimer }}
-			</button>
-			<button
-				class="w-full"
-				@click="restartTimer()"
-			>
-				Restart
-			</button>
-			<button
-				class="w-full"
-				@click="cycleSkipTimerPart()"
-			>
-				Next
+				Settings
 			</button>
 		</div>
-	</div>
-	<div
-		class="absolute pl-3"
-		:class="{ 'translate-x-[380px]': isModalSettingsOpen === true }"
-	>
-		<button
-			class="text-black"
-			@click="toggleModalSetings"
-		>
-			Settings
-		</button>
-	</div>
-	<ModalSettings
-		v-if="isModalSettingsOpen"
-		@update:worktime="updatedWorkTime"
-		@update:shortbreaktime="updatedShortBreakTime"
-		@update:longbreaktime="updatedLongBreakTime"
-	></ModalSettings>
+		<ModalSettings
+			v-if="isModalSettingsOpen"
+			@update:worktime="updatedWorkTime"
+			@update:shortbreaktime="updatedShortBreakTime"
+			@update:longbreaktime="updatedLongBreakTime"
+			@update:bgcolor="value => dataStore.updateBGColor(value)"
+		></ModalSettings>
+	</main>
 </template>

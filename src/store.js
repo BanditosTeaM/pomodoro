@@ -1,42 +1,70 @@
 import { defineStore } from 'pinia'
-import storageBGColor from './storage/adapters/bgcolor'
+import storageNotification from './storage/adapters/notification'
+import storageHistory from './storage/adapters/history'
 
 export const useDataStore = defineStore('data', {
 	state: () => ({
 		settings: {
 			times: {
 				// in minutes
-				work: 2000,
-				shortBreak: 3000,
-				longBreak: 4000
+				work: 2,
+				shortBreak: 3,
+				longBreak: 4
 			},
 
 			selectedMode: 'work',
-			selectedBGColor: 'bg-gray-500'
-		}
+			notificationsEnabled: false
+		},
+		history: []
 	}),
 	actions: {
-		initializeBGColor() {
-			const jsonBGColor = JSON.parse(storageBGColor.getBGColorInStorage())
-			if (!jsonBGColor) return
+		initializeNotificationsState() {
+			const jsonNotification = JSON.parse(
+				storageNotification.getNotificationInStorage()
+			)
+			if (!jsonNotification) return
 
-			this.settings.selectedBGColor = jsonBGColor
+			this.settings.notificationsEnabled = jsonNotification
+		},
+		initializeHistoryState() {
+			const jsonHistory = JSON.parse(storageHistory.getHistoryInStorage())
+			if (!jsonHistory) return
+
+			this.history = jsonHistory
 		},
 		setSelectedMode(newMode) {
 			this.settings.selectedMode = newMode
 		},
 		updateWorkTime(newWorkTime) {
-			this.settings.times.work = newWorkTime * 60
+			this.settings.times.work = newWorkTime
 		},
 		updateShortBreakTime(newShortBreakTime) {
-			this.settings.times.shortBreak = newShortBreakTime * 60
+			this.settings.times.shortBreak = newShortBreakTime
 		},
 		updateLongBreakTime(newLongBreakTime) {
-			this.settings.times.longBreak = newLongBreakTime * 60
+			this.settings.times.longBreak = newLongBreakTime
 		},
 		updateBGColor(newBGColor) {
 			this.settings.selectedBGColor = newBGColor
-			storageBGColor.setBGColorInStorage(this.settings.selectedBGColor)
+		},
+		setNotificationSetting(value) {
+			this.settings.notificationsEnabled = value
+			storageNotification.setNotificationInStorage(
+				this.settings.notificationsEnabled
+			)
+		},
+		addHistory(count, mode, partTimer) {
+			this.history.push({
+				id: String(Math.floor(new Date().getTime() / 1000)),
+				count: count,
+				mode: mode,
+				partTimer: partTimer
+			})
+			storageHistory.setHistoryInStorage(this.history)
+		},
+		deleteHistory(id) {
+			this.history = this.history.filter(item => item.id !== id)
+			storageHistory.setHistoryInStorage(this.history)
 		}
 	}
 })

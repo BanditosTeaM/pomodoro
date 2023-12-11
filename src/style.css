@@ -4,7 +4,7 @@
 
 @layer base {
 	body {
-		font-family: 'Raleway', Arial, sans-serif;
+		font-family: 'Courier New', Courier, monospace;
 	}
 }
 
@@ -13,5 +13,12 @@
 	input[type='number']::-webkit-outer-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
+	}
+}
+
+@layer base {
+	.dark {
+		color: wheat;
+		background: linear-gradient(53deg, #000000, #2b1839);
 	}
 }

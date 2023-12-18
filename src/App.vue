@@ -7,6 +7,9 @@ import TimerDigit from './components/TimerDigit.vue'
 import { useDataStore } from '../src/store'
 import { useDark } from '@vueuse/core'
 
+// TODO: Refactor App.vue. 270 too big
+
+// TODO: Remove `@vueuse/core` lib and create custom version of it
 const isDark = useDark()
 const dataStore = useDataStore()
 
@@ -26,22 +29,27 @@ const titleTimerData = [
 		longBreak: 'Long Break'
 	}
 ]
+// TODO: Rename from `setTitleTimer` to just `timerTitle`
 const setTitleTimer = computed(() => {
 	const title = titleTimerData.find(
+		// TODO: Rewrite. Wtf?
 		item => Object.keys(item)[0] === dataStore.settings.selectedMode
 	)[dataStore.settings.selectedMode]
 	return title
 })
 // from minutes to milliseconds
 const workTimeMode = computed(() => {
+	// TODO: Move 1000 to config
 	return dataStore.settings.times.work * 1000
 })
 
 const shortBreakTimeMode = computed(() => {
+	// TODO: Move 1000 to config
 	return dataStore.settings.times.shortBreak * 1000
 })
 
 const longBreakTimeMode = computed(() => {
+	// TODO: Move 60 * 1000 to config
 	return dataStore.settings.times.longBreak * 60 * 1000
 })
 
@@ -50,10 +58,10 @@ const timer = useTimer(Date.now() + workTimeMode.value, false)
 function restartTimer() {
 	if (dataStore.settings.selectedMode === 'work') {
 		timer.restart(Date.now() + workTimeMode.value, false)
-	}
+	} // XXX: ADD ENTER!!!!!!
 	if (dataStore.settings.selectedMode === 'shortBreak') {
 		timer.restart(Date.now() + shortBreakTimeMode.value, false)
-	}
+	} // XXX: ADD ENTER!!!!!!
 	if (dataStore.settings.selectedMode === 'longBreak') {
 		timer.restart(Date.now() + longBreakTimeMode.value, false)
 	}
@@ -90,6 +98,7 @@ function updatedShortBreakTime() {
 	checkTimer.value = 'Start'
 }
 
+// TODO: updateD?
 function updatedLongBreakTime() {
 	timer.restart(Date.now() + workTimeMode.value, false)
 	checkTimer.value = 'Start'
@@ -107,6 +116,7 @@ function cycleSkipTimerPart() {
 }
 
 const showNotification = () => {
+	// TODO: Refactor
 	if (dataStore.settings.notificationsEnabled && 'Notification' in window) {
 		if (Notification.permission === 'granted') {
 			createNotification()

@@ -14,6 +14,8 @@
 		-webkit-appearance: none;
 		margin: 0;
 	}
+
+	/* TODO: Remove arrows in input number in firefox */
 }
 
 @layer base {

@@ -25,18 +25,21 @@ onMounted(() => {
 	dataStore.initializeNotificationsState()
 })
 
+// TODO: Remove
 const inputWidthWorkTime = computed(() => {
 	const stringValue = String(localWorkTime.value).length
 	const minWidth = 20
 	return `${minWidth + stringValue * 8}px`
 })
 
+// TODO: Remove
 const inputWidthShortBreakTime = computed(() => {
 	const stringValue = String(localShortBreakTime.value).length
 	const minWidth = 20
 	return `${minWidth + stringValue * 8}px`
 })
 
+// TODO: Remove
 const inputWidthLongBreakTime = computed(() => {
 	const stringValue = String(localLongBreakTime.value).length
 	const minWidth = 20
@@ -71,6 +74,7 @@ function handleSubmit() {
 		>
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Work time:</label>
+				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localWorkTime"
 					class="border-b border-black outline-none opacity-none w-12 bg-transparent text-center dark:border-white"
@@ -82,6 +86,7 @@ function handleSubmit() {
 
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Break time:</label>
+				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localShortBreakTime"
 					class="border-b border-black outline-none opacity-none bg-transparent w-12 text-center dark:border-white"
@@ -93,6 +98,7 @@ function handleSubmit() {
 
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Long break time:</label>
+				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localLongBreakTime"
 					class="border-b border-black outline-none opacity-none bg-transparent w-12 text-center dark:border-white"
@@ -184,6 +190,7 @@ function handleSubmit() {
 	background-color: white;
 	-webkit-transition: 0.4s;
 	transition: 0.4s;
+	transform: translateX(0px);
 }
 
 input:checked + .slider {

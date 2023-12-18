@@ -7,9 +7,13 @@ const props = defineProps({
 		required: true
 	}
 })
+
+// TODO: Rewrite it component all
 const leftDigit = computed(() =>
 	props.digit.value >= 10 ? props.digit.value.toString()[0] : '0'
 )
+
+// TODO: Rewrite it component all
 const rightDigit = computed(() => {
 	if (props.digit && typeof props.digit.value !== 'undefined') {
 		return props.digit.value >= 10

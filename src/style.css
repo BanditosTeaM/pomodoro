@@ -5,17 +5,21 @@
 @layer base {
 	body {
 		font-family: 'Courier New', Courier, monospace;
+		background: linear-gradient(53deg, #6366f1, #a855f7, #ec4899);
 	}
 }
 
 @layer base {
-	input[type='number']::-webkit-inner-spin-button,
-	input[type='number']::-webkit-outer-spin-button {
+	input[type='number']::-webkit-outer-spin-button,
+	input[type='number']::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
 
-	/* TODO: Remove arrows in input number in firefox */
+	input[type='number'] {
+		-moz-appearance: textfield;
+		appearance: none;
+	}
 }
 
 @layer base {

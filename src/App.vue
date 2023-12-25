@@ -5,12 +5,12 @@ import ModalSettings from './components/PanelSettings.vue'
 import ModalHistory from './components/PanelHistory.vue'
 import TimerDigit from './components/TimerDigit.vue'
 import { useDataStore } from '../src/store'
-import { useDark } from '@vueuse/core'
+import { showNotification } from './notificationLogic'
+import { useDarkMode } from './composable/useDarkMode'
+import { MILLISECONDS_IN_MINUTE } from './constants'
 
-// TODO: Refactor App.vue. 270 too big
+const { initializeDarkModeState } = useDarkMode()
 
-// TODO: Remove `@vueuse/core` lib and create custom version of it
-const isDark = useDark()
 const dataStore = useDataStore()
 
 const isModalHistoryOpen = ref(false)
@@ -18,39 +18,20 @@ const isModalSettingsOpen = ref(false)
 const checkTimer = ref('Start')
 const skipPartTimer = ref(1)
 
-const titleTimerData = [
-	{
-		work: 'Work'
-	},
-	{
-		shortBreak: 'Short Break'
-	},
-	{
-		longBreak: 'Long Break'
-	}
-]
-// TODO: Rename from `setTitleTimer` to just `timerTitle`
-const setTitleTimer = computed(() => {
-	const title = titleTimerData.find(
-		// TODO: Rewrite. Wtf?
-		item => Object.keys(item)[0] === dataStore.settings.selectedMode
-	)[dataStore.settings.selectedMode]
-	return title
+const timerTitle = computed(() => {
+	return dataStore.timerTitle
 })
-// from minutes to milliseconds
+
 const workTimeMode = computed(() => {
-	// TODO: Move 1000 to config
-	return dataStore.settings.times.work * 1000
+	return dataStore.settings.times.work * MILLISECONDS_IN_MINUTE
 })
 
 const shortBreakTimeMode = computed(() => {
-	// TODO: Move 1000 to config
-	return dataStore.settings.times.shortBreak * 1000
+	return dataStore.settings.times.shortBreak * MILLISECONDS_IN_MINUTE
 })
 
 const longBreakTimeMode = computed(() => {
-	// TODO: Move 60 * 1000 to config
-	return dataStore.settings.times.longBreak * 60 * 1000
+	return dataStore.settings.times.longBreak * MILLISECONDS_IN_MINUTE
 })
 
 const timer = useTimer(Date.now() + workTimeMode.value, false)
@@ -58,10 +39,12 @@ const timer = useTimer(Date.now() + workTimeMode.value, false)
 function restartTimer() {
 	if (dataStore.settings.selectedMode === 'work') {
 		timer.restart(Date.now() + workTimeMode.value, false)
-	} // XXX: ADD ENTER!!!!!!
+	}
+
 	if (dataStore.settings.selectedMode === 'shortBreak') {
 		timer.restart(Date.now() + shortBreakTimeMode.value, false)
-	} // XXX: ADD ENTER!!!!!!
+	}
+
 	if (dataStore.settings.selectedMode === 'longBreak') {
 		timer.restart(Date.now() + longBreakTimeMode.value, false)
 	}
@@ -88,22 +71,6 @@ function toggleModalHistory() {
 	isModalSettingsOpen.value = false
 }
 
-function updatedWorkTime() {
-	timer.restart(Date.now() + workTimeMode.value, false)
-	checkTimer.value = 'Start'
-}
-
-function updatedShortBreakTime() {
-	timer.restart(Date.now() + workTimeMode.value, false)
-	checkTimer.value = 'Start'
-}
-
-// TODO: updateD?
-function updatedLongBreakTime() {
-	timer.restart(Date.now() + workTimeMode.value, false)
-	checkTimer.value = 'Start'
-}
-
 function cycleSkipTimerPart() {
 	if (skipPartTimer.value >= 4) {
 		restartTimer()
@@ -115,34 +82,10 @@ function cycleSkipTimerPart() {
 	restartTimer()
 }
 
-const showNotification = () => {
-	// TODO: Refactor
-	if (dataStore.settings.notificationsEnabled && 'Notification' in window) {
-		if (Notification.permission === 'granted') {
-			createNotification()
-		} else if (Notification.permission !== 'denied') {
-			Notification.requestPermission().then(permission => {
-				if (permission === 'granted') {
-					createNotification()
-				}
-			})
-		}
-	}
-}
-
-const createNotification = () => {
-	const notification = new Notification('Pomodoro', {
-		body: `Time to ${setTitleTimer.value}`,
-		icon: 'путь/к/изображению.png'
-	})
-
-	notification.onclick = () => {
-		console.log('Уведомление было кликнуто.')
-	}
-}
-
 onMounted(() => {
-	dataStore.initializeNotificationsState(), dataStore.initializeHistoryState()
+	dataStore.initializeNotificationsState(),
+		dataStore.initializeHistoryState(),
+		initializeDarkModeState()
 
 	watchEffect(async () => {
 		if (timer.isExpired.value) {
@@ -167,7 +110,9 @@ onMounted(() => {
 
 				dataStore.setSelectedMode('work')
 
-				showNotification()
+				if (dataStore.settings.notificationsEnabled) {
+					showNotification(timerTitle.value)
+				}
 				restartTimer()
 				return
 			}
@@ -179,7 +124,10 @@ onMounted(() => {
 			} else {
 				dataStore.setSelectedMode('shortBreak')
 			}
-			showNotification()
+
+			if (dataStore.settings.notificationsEnabled) {
+				showNotification(timerTitle.value)
+			}
 			restartTimer()
 		}
 	})
@@ -187,28 +135,22 @@ onMounted(() => {
 </script>
 
 <template>
-	<main
-		class="w-full h-full min-h-screen"
-		:class="{
-			dark: isDark,
-			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500': !isDark
-		}"
-	>
+	<main class="w-full h-full min-h-screen">
 		<div
 			class="absolute w-full h-full flex flex-col justify-center items-center"
 		>
-			<h1 class="block -mt-60 text-6xl">{{ setTitleTimer }}</h1>
+			<h1 class="block -mt-60 text-6xl">{{ timerTitle }}</h1>
 
 			<div
 				class="flex flex-col justify-center items-center mt-40 w-[450px] font-semibold"
 			>
 				<div>
 					<div class="-mt-10 mb-10 text-6xl">
-						<TimerDigit :digit="timer.minutes" />
+						<TimerDigit :digit="timer.minutes.value" />
 
 						<TimerDigit
 							class="-mt-5"
-							:digit="timer.seconds"
+							:digit="timer.seconds.value"
 						/>
 					</div>
 				</div>
@@ -266,10 +208,9 @@ onMounted(() => {
 
 		<ModalSettings
 			v-if="isModalSettingsOpen"
-			@update:worktime="updatedWorkTime"
-			@update:shortbreaktime="updatedShortBreakTime"
-			@update:longbreaktime="updatedLongBreakTime"
-			@update:bgcolor="value => dataStore.updateBGColor(value)"
+			@update:worktime="restartTimer"
+			@update:shortbreaktime="restartTimer"
+			@update:longbreaktime="restartTimer"
 		></ModalSettings>
 		<ModalHistory v-if="isModalHistoryOpen"></ModalHistory>
 	</main>

@@ -8,19 +8,11 @@ const props = defineProps({
 	}
 })
 
-// TODO: Rewrite it component all
-const leftDigit = computed(() =>
-	props.digit.value >= 10 ? props.digit.value.toString()[0] : '0'
-)
-
-// TODO: Rewrite it component all
-const rightDigit = computed(() => {
-	if (props.digit && typeof props.digit.value !== 'undefined') {
-		return props.digit.value >= 10
-			? props.digit.value.toString()[1]
-			: props.digit.value.toString()
+const timerlDigit = computed(() => {
+	if (props.digit >= 10) {
+		return props.digit.toString()
 	} else {
-		return null
+		return '0' + props.digit.toString()
 	}
 })
 </script>
@@ -28,12 +20,7 @@ const rightDigit = computed(() => {
 <template>
 	<div class="container">
 		<div class="digital-container">
-			<span class="single-digit">
-				{{ leftDigit }}
-			</span>
-			<span class="single-digit">
-				{{ rightDigit }}
-			</span>
+			{{ timerlDigit }}
 		</div>
 	</div>
 </template>

@@ -2,16 +2,14 @@
 import { computed, onMounted } from 'vue'
 import { useDataStore } from '../store'
 import closeIcon from '../assets/close.svg'
+import { sortedById } from '../helpers/sortFuncById'
 
 const dataStore = useDataStore()
 
 const sortedHistoryList = computed(() => {
-	// TODO: Move to helper and another file
-	return dataStore.history.toSorted((a, b) => {
-		return Number(b.id) - Number(a.id)
-	})
+	return sortedById(dataStore.history)
 })
-// XXX: ADD ENTER!!!!!!
+
 onMounted(() => {
 	dataStore.initializeHistoryState()
 })
@@ -31,12 +29,11 @@ onMounted(() => {
 				<div class="flex justify-between items-center">
 					<span>Time: {{ item.count }}(min)</span>
 					<button @click="dataStore.deleteHistory(item.id)">
-						<closeIcon class="dark:fill-wheat" />
+						<closeIcon />
 					</button>
 				</div>
 				<div class="flex justify-between items-center">
 					<span>{{ item.mode }}</span>
-					<!-- TODO: Add settings for 4. User must can change it param -->
 					<span>({{ item.partTimer }} / 4)</span>
 				</div>
 				<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />

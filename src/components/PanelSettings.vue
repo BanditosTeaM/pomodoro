@@ -1,9 +1,9 @@
 <script setup>
-import { ref, defineEmits, computed, onMounted } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import { useDataStore } from '../store'
-import { useDark } from '@vueuse/core'
+import { useDarkMode } from '../composable/useDarkMode'
 
-const isDark = useDark()
+const { darkMode, toggleDarkMode, initializeDarkModeState } = useDarkMode()
 
 const emit = defineEmits([
 	'update:worktime',
@@ -12,6 +12,7 @@ const emit = defineEmits([
 ])
 
 const dataStore = useDataStore()
+
 const localWorkTime = ref(dataStore.settings.times.work || 0)
 const localShortBreakTime = ref(dataStore.settings.times.shortBreak)
 const localLongBreakTime = ref(dataStore.settings.times.longBreak)
@@ -21,34 +22,22 @@ const updateNotificationSetting = () => {
 	dataStore.setNotificationSetting(notificationCheck.value)
 }
 
+const handleKeyPress = event => {
+	const charCode = event.charCode
+
+	if (charCode < 48 || charCode > 57) {
+		event.preventDefault()
+	}
+}
+
 onMounted(() => {
-	dataStore.initializeNotificationsState()
-})
-
-// TODO: Remove
-const inputWidthWorkTime = computed(() => {
-	const stringValue = String(localWorkTime.value).length
-	const minWidth = 20
-	return `${minWidth + stringValue * 8}px`
-})
-
-// TODO: Remove
-const inputWidthShortBreakTime = computed(() => {
-	const stringValue = String(localShortBreakTime.value).length
-	const minWidth = 20
-	return `${minWidth + stringValue * 8}px`
-})
-
-// TODO: Remove
-const inputWidthLongBreakTime = computed(() => {
-	const stringValue = String(localLongBreakTime.value).length
-	const minWidth = 20
-	return `${minWidth + stringValue * 8}px`
+	dataStore.initializeNotificationsState(), initializeDarkModeState()
 })
 
 function handleSubmit() {
 	dataStore.updateWorkTime(localWorkTime.value)
 	emit('update:worktime', localWorkTime.value)
+	console.log(localWorkTime.value)
 
 	dataStore.updateShortBreakTime(localShortBreakTime.value)
 	emit('update:shortbreaktime', localShortBreakTime.value)
@@ -74,37 +63,37 @@ function handleSubmit() {
 		>
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Work time:</label>
-				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localWorkTime"
-					class="border-b border-black outline-none opacity-none w-12 bg-transparent text-center dark:border-white"
-					:style="{ width: inputWidthWorkTime }"
-					type="number"
+					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
+					:size="String(localWorkTime).length"
+					type="text"
 					min="0"
+					@keypress="handleKeyPress"
 				/>
 			</div>
 
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Break time:</label>
-				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localShortBreakTime"
-					class="border-b border-black outline-none opacity-none bg-transparent w-12 text-center dark:border-white"
-					:style="{ width: inputWidthShortBreakTime }"
-					type="number"
+					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
+					:size="String(localShortBreakTime).length"
+					type="text"
 					min="0"
+					@keypress="handleKeyPress"
 				/>
 			</div>
 
 			<div class="mb-4 flex items-center">
 				<label class="block w-1/2">Long break time:</label>
-				<!-- TODO: Remove style and use css instead for it task -->
 				<input
 					v-model="localLongBreakTime"
-					class="border-b border-black outline-none opacity-none bg-transparent w-12 text-center dark:border-white"
-					:style="{ width: inputWidthLongBreakTime }"
-					type="number"
+					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
+					:size="String(localLongBreakTime).length"
+					type="text"
 					min="0"
+					@keypress="handleKeyPress"
 				/>
 			</div>
 		</form>
@@ -125,8 +114,9 @@ function handleSubmit() {
 			<label class="block w-1/2">Dark mode</label>
 			<label class="switch">
 				<input
-					v-model="isDark"
+					v-model="darkMode"
 					type="checkbox"
+					@click="toggleDarkMode"
 				/>
 				<span
 					class="slider round border rounded-2xl border-black dark:border-wheat"

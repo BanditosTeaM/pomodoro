@@ -1,9 +1,10 @@
 <script setup>
-import { ref, defineEmits, onMounted } from 'vue'
-import { useDataStore } from '../store'
-import { useDarkMode } from '../composable/useDarkMode'
+import { ref, watch } from 'vue'
+import { useSettingsStore } from '@store/storeSettings'
+import { switchDarkTheme } from '../composable/switchDarkTheme'
+import PanelSettingsForm from './PanelSettingsForm.vue'
 
-const { darkMode, toggleDarkMode, initializeDarkModeState } = useDarkMode()
+const { darkMode, toggleDarkMode } = switchDarkTheme()
 
 const emit = defineEmits([
 	'update:worktime',
@@ -11,107 +12,55 @@ const emit = defineEmits([
 	'update:longbreaktime'
 ])
 
-const dataStore = useDataStore()
+const settingsStore = useSettingsStore()
 
-const localWorkTime = ref(dataStore.settings.times.work || 0)
-const localShortBreakTime = ref(dataStore.settings.times.shortBreak)
-const localLongBreakTime = ref(dataStore.settings.times.longBreak)
-const notificationCheck = ref(dataStore.settings.notificationsEnabled)
+const localWorkTime = ref(settingsStore.settings.times.work)
+const localShortBreakTime = ref(settingsStore.settings.times.shortBreak)
+const localLongBreakTime = ref(settingsStore.settings.times.longBreak)
+const notificationCheck = ref(settingsStore.settings.notificationsEnabled)
 
-const updateNotificationSetting = () => {
-	dataStore.setNotificationSetting(notificationCheck.value)
-}
-
-const handleKeyPress = event => {
-	const charCode = event.charCode
-
-	if (charCode < 48 || charCode > 57) {
-		event.preventDefault()
-	}
-}
-
-onMounted(() => {
-	dataStore.initializeNotificationsState(), initializeDarkModeState()
+watch(notificationCheck, newValue => {
+	settingsStore.setNotificationSetting(newValue)
 })
 
-function handleSubmit() {
-	dataStore.updateWorkTime(localWorkTime.value)
-	emit('update:worktime', localWorkTime.value)
-	console.log(localWorkTime.value)
+function handleFormClick(values) {
+	settingsStore.updateWorkTime(values.workTime)
+	settingsStore.updateShortBreakTime(values.shortBreakTime)
+	settingsStore.updateLongBreakTime(values.longBreakTime)
 
-	dataStore.updateShortBreakTime(localShortBreakTime.value)
-	emit('update:shortbreaktime', localShortBreakTime.value)
-
-	dataStore.updateLongBreakTime(localLongBreakTime.value)
-	emit('update:longbreaktime', localLongBreakTime.value)
+	emit('update:worktime', values.workTime)
+	emit('update:shortbreaktime', values.shortBreakTime)
+	emit('update:longbreaktime', values.longBreakTime)
 }
 </script>
 
 <template>
 	<div
-		class="block absolute min-h-screen w-[425px] pl-5 pr-5 border-r border-black text-lg font-medium dark:border-white"
+		class="flex flex-col min-h-screen w-[425px] shadow-left pl-5 pr-5 border-r border-black text-lg font-medium dark:border-white max-md:w-full"
 	>
+		<!-- тута должен быть backdrop-blur-md bg-white/30  -->
+
 		<h1 class="pb-2 pt-2 font-bold text-xl text-center">Settings</h1>
 		<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 		<h2 class="">Set Time (in min)</h2>
-		<p class="block text-gray-400 text-sm pt-1 pb-2">
+		<p class="block text-white text-sm pt-1 pb-2">
 			This will reset the clock if you have a timer in progress.
 		</p>
-		<form
-			class="block mb-2"
-			@submit.prevent="handleSubmit"
-		>
-			<div class="mb-4 flex items-center">
-				<label class="block w-1/2">Work time:</label>
-				<input
-					v-model="localWorkTime"
-					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
-					:size="String(localWorkTime).length"
-					type="text"
-					min="0"
-					@keypress="handleKeyPress"
-				/>
-			</div>
 
-			<div class="mb-4 flex items-center">
-				<label class="block w-1/2">Break time:</label>
-				<input
-					v-model="localShortBreakTime"
-					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
-					:size="String(localShortBreakTime).length"
-					type="text"
-					min="0"
-					@keypress="handleKeyPress"
-				/>
-			</div>
-
-			<div class="mb-4 flex items-center">
-				<label class="block w-1/2">Long break time:</label>
-				<input
-					v-model="localLongBreakTime"
-					class="border-b border-black outline-none opacity-none bg-transparent text-center dark:border-white"
-					:size="String(localLongBreakTime).length"
-					type="text"
-					min="0"
-					@keypress="handleKeyPress"
-				/>
-			</div>
-		</form>
-		<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
-		<div class="flex justify-center">
-			<button
-				class="h-10 w-52 border rounded-2xl border-black dark:border-white"
-				type="submit"
-				@click="handleSubmit"
-			>
-				Set Time
-			</button>
-		</div>
+		<PanelSettingsForm
+			v-model:localWorkTime="localWorkTime"
+			v-model:localShortBreakTime="localShortBreakTime"
+			v-model:localLongBreakTime="localLongBreakTime"
+			@click="handleFormClick"
+		/>
 
 		<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 		<h2>Other Settings</h2>
+
+		<!-- 01:30, a: xx:xx -->
 		<div class="mb-4 flex items-center">
-			<label class="block w-1/2">Dark mode</label>
+			<h3 class="block w-1/2">Dark mode</h3>
+			<!--  TODO: Create another component Switch for it  -->
 			<label class="switch">
 				<input
 					v-model="darkMode"
@@ -124,12 +73,12 @@ function handleSubmit() {
 			</label>
 		</div>
 		<div class="mb-4 flex items-center">
-			<label class="block w-1/2">Notification</label>
+			<h3 class="block w-1/2">Notification</h3>
+			<!-- TODO: Create another component Switch for it -->
 			<label class="switch">
 				<input
 					v-model="notificationCheck"
 					type="checkbox"
-					@change="updateNotificationSetting"
 				/>
 				<span
 					class="slider round border rounded-2xl border-black dark:border-wheat"

@@ -1,1 +1,0 @@
-export const MILLISECONDS_IN_MINUTE = 60 * 1000

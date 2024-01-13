@@ -9,7 +9,7 @@ const historyStore = useHistoryStore()
 const settingsStore = useSettingsStore()
 
 const part = computed(() => {
-	return settingsStore.settings.partTimer
+	return settingsStore.settings.maxCounter
 })
 
 const sortedHistoryList = computed(() => {

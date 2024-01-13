@@ -11,16 +11,14 @@ const props = defineProps({
 const timerlDigit = computed(() => {
 	if (props.digit >= 10) {
 		return props.digit.toString()
-	} else {
-		return '0' + props.digit.toString()
 	}
+
+	return '0' + props.digit.toString()
 })
 </script>
 
 <template>
 	<div class="container">
-		<div class="digital-container">
-			{{ timerlDigit }}
-		</div>
+		{{ timerlDigit }}
 	</div>
 </template>

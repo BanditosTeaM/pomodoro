@@ -14,9 +14,12 @@ const settingsStore = useSettingsStore()
 const historyStore = useHistoryStore()
 
 const checkTimer = ref('Start')
-const skipPartTimer = ref(1)
 const mode = computed(() => {
 	return settingsStore.settings.selectedMode
+})
+
+const maxCounter = computed(() => {
+	return settingsStore.settings.maxCounter
 })
 
 const workTimeMode = computed(() => {
@@ -35,6 +38,7 @@ const timer = useTimer(
 	Date.now() + settingsStore.settings.times[mode.value],
 	false
 )
+
 restartTimer()
 
 function restartTimer() {
@@ -52,6 +56,25 @@ function restartTimer() {
 	checkTimer.value = 'Start'
 }
 
+const checkNotification = mode => {
+	if (settingsStore.settings.notificationsEnabled) {
+		showNotification(mode)
+	}
+	restartTimer()
+}
+
+const addHistoryAndSkip = (time, title) => {
+	historyStore.addHistory(time, title, settingsStore.settings.defCounter)
+
+	if (mode.value === 'longBreak') {
+		settingsStore.settings.defCounter = 1
+	}
+
+	if (mode.value === 'shortBreak') {
+		settingsStore.settings.defCounter += 1
+	}
+}
+
 function switchingTimer() {
 	if (timer.isRunning.value === false) {
 		checkTimer.value = 'Stop'
@@ -63,61 +86,45 @@ function switchingTimer() {
 }
 
 function cycleSkipTimerPart() {
-	if (skipPartTimer.value >= 4) {
+	if (settingsStore.settings.defCounter >= 4) {
 		restartTimer()
-		skipPartTimer.value = 1
+		settingsStore.settings.defCounter = 1
 		return
 	}
 
-	skipPartTimer.value += 1
+	settingsStore.settings.defCounter += 1
 	restartTimer()
 }
 
 onMounted(() => {
 	watchEffect(async () => {
-		// 00:30, a: xx:xx
-		// TODO: Try refactor
-
 		if (timer.isExpired.value) {
 			if (mode.value !== 'work') {
 				if (mode.value === 'shortBreak') {
-					historyStore.addHistory(
-						shortBreakTimeMode.value,
-						'Short Break',
-						skipPartTimer.value
-					)
+					addHistoryAndSkip(shortBreakTimeMode.value, 'Short Break')
+				}
 
-					skipPartTimer.value += 1
-				} else {
-					historyStore.addHistory(
-						longBreakTimeMode.value,
-						'Long Break',
-						skipPartTimer.value
-					)
-
-					skipPartTimer.value = 1
+				if (mode.value === 'longBreak') {
+					addHistoryAndSkip(longBreakTimeMode.value, 'Long Break')
 				}
 
 				settingsStore.setSelectedMode('work')
 
-				if (settingsStore.settings.notificationsEnabled) {
-					showNotification(modeNames[mode.value])
-				}
-				restartTimer()
+				checkNotification(modeNames[mode.value])
+
 				return
 			}
 
-			historyStore.addHistory(workTimeMode.value, 'Work', skipPartTimer.value)
+			addHistoryAndSkip(workTimeMode.value, 'Work')
 
-			if (skipPartTimer.value >= 4) {
-				settingsStore.setSelectedMode('longBreak')
-			} else {
-				settingsStore.setSelectedMode('shortBreak')
-			}
-			if (settingsStore.settings.notificationsEnabled) {
-				showNotification(modeNames[mode.value])
-			}
-			restartTimer()
+			const nextMode =
+				settingsStore.settings.defCounter >= maxCounter.value
+					? 'longBreak'
+					: 'shortBreak'
+
+			settingsStore.setSelectedMode(nextMode)
+
+			checkNotification(modeNames[mode.value])
 		}
 	})
 })
@@ -140,7 +147,7 @@ onMounted(() => {
 				/>
 
 				<h2 class="mt-4 text-2xl">
-					{{ skipPartTimer }} / {{ settingsStore.settings.partTimer }}
+					{{ settingsStore.settings.defCounter }} / {{ maxCounter }}
 				</h2>
 
 				<ControlsButton

@@ -69,12 +69,12 @@ const togglePanel = key => {
 					:class="burgerMenu ? '-mb-2 rotate-45' : 'rotate-90'"
 				></div>
 				<div
-					class="bg-black h-5 w-[2px] rounded-full rotate-90 -mt-3"
-					:class="burgerMenu ? '-rotate-45' : 'rotate-90'"
+					class="bg-black h-5 w-[2px] rounded-full -mt-3"
+					:class="burgerMenu ? 'hidden' : 'rotate-90'"
 				></div>
 				<div
-					class="bg-black h-5 w-[2px] rounded-full rotate-90 -mt-3"
-					:class="burgerMenu ? 'hidden' : 'rotate-90'"
+					class="bg-black h-5 w-[2px] rounded-full -mt-3"
+					:class="burgerMenu ? '-rotate-45' : 'rotate-90'"
 				></div>
 			</div>
 		</button>

@@ -1,6 +1,6 @@
 name: main
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -27,3 +27,9 @@ jobs:
 
       - name: Run build
         run: pnpm build
+
+      - name: Run format
+        run: pnpm format
+
+      - name: Run lint
+        run: pnpm lint

@@ -12,7 +12,8 @@ export const useSettingsStore = defineStore('settings', {
 			selectedMode: 'work',
 			notificationsEnabled: false,
 			colorTheme: 'dark',
-			partTimer: 4
+			maxCounter: 4,
+			defCounter: 1
 		}
 	}),
 

@@ -1,22 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { defineModel } from 'vue'
 
 const props = defineProps({
 	title: {
 		type: String,
 		required: true
-	},
-	localValue: {
-		type: Number,
-		required: true
 	}
 })
-const emit = defineEmits(['update:value'])
-const internalValue = ref(props.localValue)
-
-const updateInternalValue = () => {
-	emit('update:value', Number(internalValue.value))
-}
+const internalValue = defineModel()
 </script>
 
 <template>
@@ -28,7 +19,6 @@ const updateInternalValue = () => {
 			:style="{ width: `${Math.min(20, String(internalValue).length)}ch` }"
 			type="number"
 			min="0"
-			@input="updateInternalValue"
 		/>
 	</div>
 </template>

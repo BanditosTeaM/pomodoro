@@ -22,7 +22,12 @@ export default defineConfig({
 		__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'
 	},
 	plugins: [
-		vue(),
+		vue({
+			script: {
+				defineModel: true,
+				propsDestructure: true
+			}
+		}),
 		svgLoader({
 			defaultImport: 'component'
 		}),

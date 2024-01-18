@@ -2,6 +2,7 @@
 import { defineModel, computed, ref } from 'vue'
 import TimeInput from './TimeInput.vue'
 import { ERROR_MESSAGE } from '@/constants'
+
 const emit = defineEmits(['click'])
 const data = [
 	{ key: 'work', title: 'Work time:' },
@@ -14,50 +15,39 @@ const errors = {
 	shortBreak: ref(''),
 	longBreak: ref('')
 }
-
 const localWorkTime = defineModel('localWorkTime')
 const localShortBreakTime = defineModel('localShortBreakTime')
 const localLongBreakTime = defineModel('localLongBreakTime')
 
-const getLocalValue = key => {
-	if (key === 'work') return localWorkTime.value
-	if (key === 'shortBreak') return localShortBreakTime.value
-	if (key === 'longBreak') return localLongBreakTime.value
-}
-
-const updateItemValue = (key, value) => {
-	if (key === 'work') localWorkTime.value = Number(value)
-	if (key === 'shortBreak') localShortBreakTime.value = Number(value)
-	if (key === 'longBreak') localLongBreakTime.value = Number(value)
-	errors[key].value = ''
+const modelValues = {
+	work: localWorkTime.value,
+	shortBreak: localShortBreakTime.value,
+	longBreak: localLongBreakTime.value
 }
 
 const isFormValid = computed(() => {
 	return (
-		Number(localWorkTime.value) &&
-		localWorkTime.value > 0 &&
-		Number(localShortBreakTime.value) &&
-		localShortBreakTime.value > 0 &&
-		Number(localLongBreakTime.value) &&
-		localLongBreakTime.value > 0
+		Number(modelValues.work) &&
+		modelValues.work > 0 &&
+		Number(modelValues.shortBreak) &&
+		modelValues.shortBreak > 0 &&
+		Number(modelValues.longBreak) &&
+		modelValues.longBreak > 0
 	)
 })
 
 const handleSubmit = () => {
+	console.log(modelValues)
 	if (isFormValid.value) {
-		emit('click', {
-			workTime: localWorkTime.value,
-			shortBreakTime: localShortBreakTime.value,
-			longBreakTime: localLongBreakTime.value
-		})
+		emit('click', modelValues)
 	} else {
-		if (!Number(localWorkTime.value) || localWorkTime.value <= 0) {
+		if (!Number(modelValues.work) || modelValues.work <= 0) {
 			errors.work.value = ERROR_MESSAGE
 		}
-		if (!Number(localShortBreakTime.value) || localShortBreakTime.value <= 0) {
+		if (!Number(modelValues.shortBreak) || modelValues.shortBreak <= 0) {
 			errors.shortBreak.value = ERROR_MESSAGE
 		}
-		if (!Number(localLongBreakTime.value) || localLongBreakTime.value <= 0) {
+		if (!Number(modelValues.longBreak) || modelValues.longBreak <= 0) {
 			errors.longBreak.value = ERROR_MESSAGE
 		}
 	}
@@ -75,9 +65,8 @@ const handleSubmit = () => {
 			class="mb-4 flex flex-col"
 		>
 			<TimeInput
+				v-model="modelValues[item.key]"
 				:title="item.title"
-				:local-value="getLocalValue(item.key)"
-				@update:value="updateItemValue(item.key, $event)"
 			/>
 			<span
 				v-if="errors[item.key].value"

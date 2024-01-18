@@ -24,13 +24,13 @@ watch(notificationCheck, newValue => {
 })
 
 function handleFormClick(values) {
-	settingsStore.updateWorkTime(values.workTime)
-	settingsStore.updateShortBreakTime(values.shortBreakTime)
-	settingsStore.updateLongBreakTime(values.longBreakTime)
+	settingsStore.updateWorkTime(values.work)
+	settingsStore.updateShortBreakTime(values.shortBreak)
+	settingsStore.updateLongBreakTime(values.longBreak)
 
-	emit('update:worktime', values.workTime)
-	emit('update:shortbreaktime', values.shortBreakTime)
-	emit('update:longbreaktime', values.longBreakTime)
+	emit('update:worktime', values.work)
+	emit('update:shortbreaktime', values.shortBreak)
+	emit('update:longbreaktime', values.longBreak)
 }
 </script>
 

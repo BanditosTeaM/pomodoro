@@ -33,7 +33,7 @@
 			"@/*": ["./src/*"],
 			"@assets/*": ["./src/assets/*"],
 			"@components/*": ["./src/components/*"],
-			"@composables/*": ["./src/composables/*"],
+			"@composable/*": ["./src/composable/*"],
 			"@config/*": ["./src/config/*"],
 			"@constants/*": ["./src/constants/*"],
 			"@helpers/*": ["./src/helpers/*"],
@@ -42,7 +42,7 @@
 
 			"@assets": ["./src/assets"],
 			"@components": ["./src/components"],
-			"@composables": ["./src/composables"],
+			"@composable": ["./src/composable"],
 			"@config": ["./src/config"],
 			"@constants": ["./src/constants"],
 			"@helpers": ["./src/helpers"],

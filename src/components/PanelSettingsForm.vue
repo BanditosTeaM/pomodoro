@@ -15,9 +15,10 @@ const errors = {
 	shortBreak: ref(''),
 	longBreak: ref('')
 }
-const localWorkTime = defineModel('localWorkTime')
-const localShortBreakTime = defineModel('localShortBreakTime')
-const localLongBreakTime = defineModel('localLongBreakTime')
+
+const localWorkTime = defineModel('localWorkTime', { type: Number })
+const localShortBreakTime = defineModel('localShortBreakTime', { type: Number })
+const localLongBreakTime = defineModel('localLongBreakTime', { type: Number })
 
 const modelValues = {
 	work: localWorkTime.value,
@@ -37,7 +38,6 @@ const isFormValid = computed(() => {
 })
 
 const handleSubmit = () => {
-	console.log(modelValues)
 	if (isFormValid.value) {
 		emit('click', modelValues)
 	} else {

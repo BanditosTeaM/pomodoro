@@ -139,7 +139,7 @@ onMounted(() => {
 				{{ modeNames[mode] }}
 			</h1>
 			<div
-				class="flex flex-col justify-center items-center mt-40 w-[450px] font-semibold"
+				class="flex flex-col justify-center items-center mt-40 font-semibold"
 			>
 				<TimerTime
 					:minutes="timer.minutes.value"

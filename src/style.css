@@ -22,7 +22,6 @@
 	}
 	body {
 		background: linear-gradient(53deg, #6366f1, #a855f7, #ec4899) no-repeat;
-		min-height: 100vh;
 		font-family: 'Courier Prime', monospace;
 	}
 

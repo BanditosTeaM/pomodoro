@@ -19,9 +19,9 @@ const sortedHistoryList = computed(() => {
 
 <template>
 	<div
-		class="flex flex-col w-[425px] min-h-screen pl-5 pr-5 border-r border-black text-lg font-medium dark:border-white max-md:w-full"
+		class="flex flex-col w-[425px] min-h-screen pl-5 pr-5 border-r border-black text-lg font-medium overflow-y-scroll max-h-full dark:border-white max-md:w-full"
 	>
-		<div class="h-full overflow-y-auto">
+		<div class="h-full">
 			<h1 class="pb-2 pt-2 font-bold text-xl text-center">History</h1>
 			<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 			<div

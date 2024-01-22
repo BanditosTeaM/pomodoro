@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import closeIcon from '../assets/close.svg'
+import closeIcon from '@assets/close.svg'
 import { reverseSortById } from '@helpers/reverseSortById'
 import { useHistoryStore } from '@store/storeHistory'
 import { useSettingsStore } from '@store/storeSettings'

@@ -43,13 +43,13 @@ const togglePanel = key => {
 			<button
 				v-for="item in data"
 				:key="item.key"
-				class="border mt-3 border-black border-solid rounded-r-lg h-8 w-24 hover:text-white"
+				class="border mt-3 border-black border-solid rounded-r-lg h-8 w-24 hover:text-white dark:border-wheat"
 				:class="
 					(props.isModalHistoryOpen || props.isModalSettingsOpen) == false
 						? 'bg-transparent'
 						: activeTitle === item.key
-						  ? 'border-2 border-white border-dashed'
-						  : 'border-black'
+							? 'border-2 border-white border-dashed'
+							: 'border-black'
 				"
 				@click="togglePanel(item.key)"
 			>

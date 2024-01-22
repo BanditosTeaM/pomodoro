@@ -11,7 +11,7 @@ export const useSettingsStore = defineStore('settings', {
 
 			selectedMode: 'work',
 			notificationsEnabled: false,
-			colorTheme: 'dark',
+			colorTheme: 'auto',
 			maxCounter: 4,
 			defCounter: 1
 		}
@@ -35,6 +35,10 @@ export const useSettingsStore = defineStore('settings', {
 
 		setNotificationSetting(value) {
 			this.settings.notificationsEnabled = value
+		},
+
+		setColorTheme(scheme) {
+			this.settings.colorTheme = scheme
 		}
 	},
 	persist: true

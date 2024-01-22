@@ -1,10 +1,11 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useSettingsStore } from '@store/storeSettings'
-import { switchDarkTheme } from '../composable/switchDarkTheme'
 import PanelSettingsForm from './PanelSettingsForm.vue'
-
-const { darkMode, toggleDarkMode } = switchDarkTheme()
+import PanelSettingsSwitch from './PanelSettingsSwitch.vue'
+import PanelSettingsSwitchTheme from './PanelSettingsSwitchTheme.vue'
+import { switchDarkTheme } from '@composable/switchDarkTheme'
+import { titleNot, titleTheme } from '@constants'
 
 const emit = defineEmits([
 	'update:worktime',
@@ -12,14 +13,16 @@ const emit = defineEmits([
 	'update:longbreaktime'
 ])
 
+const { colorTheme } = switchDarkTheme()
+
 const settingsStore = useSettingsStore()
 
 const localWorkTime = ref(settingsStore.settings.times.work)
 const localShortBreakTime = ref(settingsStore.settings.times.shortBreak)
 const localLongBreakTime = ref(settingsStore.settings.times.longBreak)
-const notificationCheck = ref(settingsStore.settings.notificationsEnabled)
+const notificationStatus = ref(settingsStore.settings.notificationsEnabled)
 
-watch(notificationCheck, newValue => {
+watch(notificationStatus, newValue => {
 	settingsStore.setNotificationSetting(newValue)
 })
 
@@ -57,101 +60,14 @@ function handleFormClick(values) {
 		<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 		<h2>Other Settings</h2>
 
-		<!-- 01:30, a: xx:xx -->
-		<div class="mb-4 flex items-center">
-			<h3 class="block w-1/2">Dark mode</h3>
-			<!--  TODO: Create another component Switch for it  -->
-			<label class="switch">
-				<input
-					v-model="darkMode"
-					type="checkbox"
-					@click="toggleDarkMode"
-				/>
-				<span
-					class="slider round border rounded-2xl border-black dark:border-wheat"
-				></span>
-			</label>
-		</div>
-		<div class="mb-4 flex items-center">
-			<h3 class="block w-1/2">Notification</h3>
-			<!-- TODO: Create another component Switch for it -->
-			<label class="switch">
-				<input
-					v-model="notificationCheck"
-					type="checkbox"
-				/>
-				<span
-					class="slider round border rounded-2xl border-black dark:border-wheat"
-				></span>
-			</label>
-		</div>
+		<PanelSettingsSwitchTheme
+			v-model="colorTheme"
+			:title="titleTheme"
+		/>
+
+		<PanelSettingsSwitch
+			v-model="notificationStatus"
+			:title="titleNot"
+		/>
 	</div>
 </template>
-
-<style scoped>
-.circle-label:first-child .circle-input:checked + .circle-span {
-	box-shadow: 0 0 0 2px white;
-}
-.circle-input:checked + .circle-span {
-	box-shadow: 0 0 0 2px white;
-}
-.switch {
-	position: relative;
-	display: inline-block;
-	width: 44px;
-	height: 24px;
-}
-
-.switch input {
-	display: none;
-}
-
-/* The slider */
-.slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: transparent;
-	-webkit-transition: 0.4s;
-	transition: 0.4s;
-}
-
-.slider:before {
-	position: absolute;
-	content: '';
-	height: 20px;
-	width: 20px;
-	left: 4px;
-	bottom: 1px;
-	background-color: white;
-	-webkit-transition: 0.4s;
-	transition: 0.4s;
-	transform: translateX(0px);
-}
-
-input:checked + .slider {
-	background-color: black;
-}
-
-input:focus + .slider {
-	box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider:before {
-	-webkit-transform: translateX(px);
-	-ms-transform: translateX(20px);
-	transform: translateX(12px);
-}
-
-/* Rounded sliders */
-.slider.round {
-	border-radius: 34px;
-}
-
-.slider.round:before {
-	border-radius: 50%;
-}
-</style>

@@ -1,25 +1,27 @@
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useDataStore } from '../store'
-import closeIcon from '../assets/close.svg'
+import { computed } from 'vue'
+import closeIcon from '@assets/close.svg'
+import { reverseSortById } from '@helpers/reverseSortById'
+import { useHistoryStore } from '@store/storeHistory'
+import { useSettingsStore } from '@store/storeSettings'
 
-const dataStore = useDataStore()
+const historyStore = useHistoryStore()
+const settingsStore = useSettingsStore()
+
+const part = computed(() => {
+	return settingsStore.settings.maxCounter
+})
 
 const sortedHistoryList = computed(() => {
-	return dataStore.history.toSorted((a, b) => {
-		return Number(b.id) - Number(a.id)
-	})
-})
-onMounted(() => {
-	dataStore.initializeHistoryState()
+	return historyStore.history.toSorted(reverseSortById)
 })
 </script>
 
 <template>
 	<div
-		class="flex flex-col absolute w-[425px] min-h-screen pl-5 pr-5 border-r border-black text-lg font-medium dark:border-white"
+		class="flex flex-col w-[425px] min-h-screen pl-5 pr-5 border-r border-black text-lg font-medium overflow-y-scroll max-h-full dark:border-white max-md:w-full"
 	>
-		<div class="h-full overflow-y-auto">
+		<div class="h-full">
 			<h1 class="pb-2 pt-2 font-bold text-xl text-center">History</h1>
 			<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 			<div
@@ -28,13 +30,13 @@ onMounted(() => {
 			>
 				<div class="flex justify-between items-center">
 					<span>Time: {{ item.count }}(min)</span>
-					<button @click="dataStore.deleteHistory(item.id)">
-						<closeIcon class="dark:fill-wheat" />
+					<button @click="historyStore.deleteHistory(item.id)">
+						<closeIcon />
 					</button>
 				</div>
 				<div class="flex justify-between items-center">
 					<span>{{ item.mode }}</span>
-					<span>({{ item.partTimer }} / 4)</span>
+					<span>({{ item.partTimer }} / {{ part }})</span>
 				</div>
 				<hr class="min-w-full h-px border-black mb-2 mt-2 dark:border-white" />
 			</div>

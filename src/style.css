@@ -3,22 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-	body {
-		font-family: 'Courier New', Courier, monospace;
-	}
-}
-
-@layer base {
-	input[type='number']::-webkit-inner-spin-button,
-	input[type='number']::-webkit-outer-spin-button {
+	input[type='number']::-webkit-outer-spin-button,
+	input[type='number']::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
-}
 
-@layer base {
+	input[type='number'] {
+		-moz-appearance: textfield;
+		appearance: none;
+	}
+	html,
+	body {
+		min-height: 100%;
+		min-width: 100%;
+		padding: 0;
+		margin: 0;
+	}
+	body {
+		background: linear-gradient(53deg, #6366f1, #a855f7, #ec4899) no-repeat;
+		font-family: 'Courier Prime', monospace;
+	}
+
 	.dark {
 		color: wheat;
 		background: linear-gradient(53deg, #000000, #2b1839);
+	}
+	input:focus {
+		color: white;
+	}
+	button:hover {
+		color: white;
 	}
 }

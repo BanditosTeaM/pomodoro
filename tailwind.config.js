@@ -6,6 +6,9 @@ export default {
 		extend: {
 			colors: {
 				wheat: '#f5deb3'
+			},
+			boxShadow: {
+				left: '5px 5px 5px 1px rgb(0 0 0 / 0.1)'
 			}
 		}
 	},

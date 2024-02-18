@@ -9,9 +9,12 @@ import { useHistoryStore } from '@store/storeHistory'
 import { showNotification } from '@utils'
 import { MILLISECONDS_IN_MINUTE } from '@constants'
 import { modeNames } from '@config'
+import { switchDarkTheme } from '@composable/switchDarkTheme'
 
 const settingsStore = useSettingsStore()
 const historyStore = useHistoryStore()
+
+const { setupScheme, setupSwitcher } = switchDarkTheme()
 
 const checkTimer = ref('Start')
 const mode = computed(() => {
@@ -97,6 +100,8 @@ function cycleSkipTimerPart() {
 }
 
 onMounted(() => {
+	setupScheme()
+	setupSwitcher()
 	watchEffect(async () => {
 		if (timer.isExpired.value) {
 			if (mode.value !== 'work') {

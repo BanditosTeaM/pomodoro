@@ -44,31 +44,31 @@ export default defineConfig({
 				theme_color: '#ffffff',
 				icons: [
 					{
-						src: '/src/assets/logo16x16.png',
+						src: 'logo16x16.png',
 						sizes: '16x16',
 						type: 'image/png'
 					},
 					{
-						src: '/src/assets/logo32x32.png',
+						src: 'logo32x32.png',
 						sizes: '32x32',
 						type: 'image/png'
 					},
 
 					{
-						src: '/src/assets/logo196x196.png',
+						src: 'logo196x196.png',
 						sizes: '196x196',
 						type: 'image/png'
 					}
 				],
 				screenshots: [
 					{
-						src: '/src/assets/screenshot-desktop.png',
+						src: 'screenshot-desktop.png',
 						sizes: '1280x800',
 						type: 'image/png',
 						form_factor: 'wide'
 					},
 					{
-						src: '/src/assets/screenshot-mobile.png',
+						src: 'screenshot-mobile.png',
 						sizes: '640x1280',
 						type: 'image/png',
 						form_factor: 'notched'

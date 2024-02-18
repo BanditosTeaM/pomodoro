@@ -9,7 +9,7 @@ export const useHistoryStore = defineStore('history', {
 		addHistory(count, mode, partTimer) {
 			this.history.push({
 				id: String(Math.floor(new Date().getTime() / 1000)),
-				count: count,
+				count: count / 1000 / 60,
 				mode: mode,
 				partTimer: partTimer
 			})
